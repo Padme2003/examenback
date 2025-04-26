@@ -1,24 +1,23 @@
-import { ArgumentMetadata, Injectable, PipeTransform, BadRequestException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Producto } from '../../../productos/entities/producto.entity';
-import { Repository } from 'typeorm';
+import { Injectable, PipeTransform, ArgumentMetadata, BadRequestException } from '@nestjs/common';
+import { ProductosService } from '../../../productos/productos.service';
+
 
 @Injectable()
 export class ValidateProductosPipe implements PipeTransform {
-  constructor(
-    @InjectRepository(Producto)
-    private productosRepository: Repository<Producto>,
-  ) {}
+  constructor(private readonly productosService: ProductosService) {}
 
   async transform(value: any, metadata: ArgumentMetadata) {
-    if (value.productos) {
-      for (const item of value.productos) {
-        const producto = await this.productosRepository.findOneBy({ id: item.productoId });
-        if (!producto) {
-          throw new BadRequestException(`Producto con ID ${item.productoId} no existe`);
-        }
+    const productos = value.productos;
+
+    for (const item of productos) {
+      const producto = await this.productosService.findOne(item.productoId);
+      if (!producto) {
+        throw new BadRequestException(`Producto con ID ${item.productoId} no existe`);
       }
     }
+
     return value;
   }
 }
+
+

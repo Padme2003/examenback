@@ -107,5 +107,3 @@ export class PedidosService {
     return this.pedidosRepository.remove(pedido);
   }
 }
-
-

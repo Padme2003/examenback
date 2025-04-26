@@ -9,7 +9,7 @@ export class PedidosController {
   constructor(private readonly pedidosService: PedidosService) {}
 
   @Post()
-  @UsePipes(ValidateProductosPipe)
+  @UsePipes(ValidateProductosPipe) // Validación de productos
   create(@Body() createPedidoDto: CreatePedidoDto) {
     return this.pedidosService.create(createPedidoDto);
   }
@@ -35,4 +35,5 @@ export class PedidosController {
     return this.pedidosService.remove(id);
   }
 }
+
 
