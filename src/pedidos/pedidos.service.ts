@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Pedido } from './entities/pedido.entity';
 import { PedidoProducto } from './entities/pedido-producto.entity';
@@ -30,11 +30,16 @@ export class PedidosService {
 
       for (const item of createPedidoDto.productos) {
         const producto = await this.productosRepository.findOneBy({ id: item.productoId });
+        if (!producto) {
+          throw new NotFoundException(`Producto con ID ${item.productoId} no encontrado`);
+        }
+
         const pedidoProducto = this.pedidoProductoRepository.create({
           pedido,
           producto,
           cantidad: item.cantidad,
         });
+
         await queryRunner.manager.save(pedidoProducto);
       }
 
@@ -57,7 +62,11 @@ export class PedidosService {
       where: { id }, 
       relations: ['pedidoProductos', 'pedidoProductos.producto'] 
     });
-    if (!pedido) throw new NotFoundException('Pedido no encontrado');
+
+    if (!pedido) {
+      throw new NotFoundException('Pedido no encontrado');
+    }
+
     return pedido;
   }
 
@@ -65,7 +74,10 @@ export class PedidosService {
     const pedido = await this.findOne(id);
 
     if (updatePedidoDto.fecha) {
-      pedido.fecha = updatePedidoDto.fecha;
+      if (isNaN(new Date(updatePedidoDto.fecha).getTime())) {
+        throw new BadRequestException('Fecha inválida');
+      }
+      pedido.fecha = new Date(updatePedidoDto.fecha);
     }
 
     if (updatePedidoDto.productos) {
@@ -73,11 +85,16 @@ export class PedidosService {
 
       for (const item of updatePedidoDto.productos) {
         const producto = await this.productosRepository.findOneBy({ id: item.productoId });
+        if (!producto) {
+          throw new NotFoundException(`Producto con ID ${item.productoId} no encontrado`);
+        }
+
         const pedidoProducto = this.pedidoProductoRepository.create({
           pedido,
           producto,
           cantidad: item.cantidad,
         });
+
         await this.pedidoProductoRepository.save(pedidoProducto);
       }
     }

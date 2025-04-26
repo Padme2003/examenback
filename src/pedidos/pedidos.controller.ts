@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, Put, Param, Delete, ParseIntPipe, UsePipes
 import { PedidosService } from './pedidos.service';
 import { CreatePedidoDto } from './dto/create-pedido.dto';
 import { UpdatePedidoDto } from './dto/update-pedido.dto';
-import { ValidateProductosPipe } from '../pipes/validate-productos.pipe';
+import { ValidateProductosPipe } from '../common/filters/pipes/validate-productos.pipe';
 
 @Controller('pedidos')
 export class PedidosController {

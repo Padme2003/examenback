@@ -1,6 +1,6 @@
 import { ArgumentMetadata, Injectable, PipeTransform, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Producto } from '../productos/entities/producto.entity';
+import { Producto } from '../../../productos/entities/producto.entity';
 import { Repository } from 'typeorm';
 
 @Injectable()
